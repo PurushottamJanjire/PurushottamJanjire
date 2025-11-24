@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Purushottam Janjire — Portfolio</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    :root {
+      --nav-h: 64px;
+      --accent-from: #4f46e5;
+      --accent-to: #7c3aed;
+    }
+    html,body { height:100%; margin:0; font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:#060612; color:#e6eef8; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+    nav { height: var(--nav-h); }
+    .nav-inner { height: var(--nav-h); display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+
+    .slides { height: calc(100vh - var(--nav-h)); scroll-snap-type: y mandatory; overflow-y:hidden; -webkit-overflow-scrolling: scroll;  }
+
+    section.slide { scroll-snap-align: start; min-height: calc(100vh - var(--nav-h)); display:flex; align-items:center; padding: 48px; box-sizing:border-box; }
+    .panel { width:min(1100px,96%); height: calc(100% - 48px); border-radius:16px; background: linear-gradient(180deg, rgba(12,14,30,0.72), rgba(6,8,18,0.72)); border:1px solid rgba(255,255,255,0.03); padding:36px; box-shadow: 0 20px 60px rgba(2,6,23,0.7); position:relative; overflow:hidden; }
+
+    #codeRain {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      opacity: 0.18;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      background: radial-gradient(1200px 600px at 10% 20%, rgba(79,70,229,0.06), transparent 10%),
+                  radial-gradient(900px 400px at 90% 80%, rgba(124,58,237,0.04), transparent 10%);
+    }
+    main, nav, .panel, .modal { z-index: 5; }
+
+    .hero-left { display:flex; gap:30px; align-items:center; }
+    .hero-badge { display:inline-block; padding:6px 12px; border-radius:999px; background:linear-gradient(90deg,var(--accent-from),var(--accent-to)); color:white; font-weight:600; font-size:13px; }
+
+    .cursor { display:inline-block; width:2px; height:1.2em; background:linear-gradient(180deg,var(--accent-from),var(--accent-to)); margin-left:8px; vertical-align:middle; animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity:0 } }
+
+    .progress{
+      position: fixed;
+      right: 30px;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center;
+      gap: 20px;
+      z-index: 1000;
+    }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      background-color: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      transition: transform 0.25s, background-color 0.25s;
+      cursor: pointer;
+    }
+
+    .dot.active {
+      background-color: #7f5bff;
+      transform: scale(1.5);
+    }
+
+    .projects-grid { display:grid; gap:18px; grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .project { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.03); padding:18px; border-radius:12px; transition: transform .22s ease, box-shadow .22s ease; }
+    .project:hover { transform: translateY(-6px); box-shadow: 0 24px 50px rgba(2,6,23,0.6), 0 4px 18px rgba(79,70,229,0.06); cursor:pointer; }
+
+    .modal-centered { position: fixed; inset:0; display:none; align-items:center; justify-content:center; background: rgba(2,6,23,0.65); padding:20px; z-index:80; }
+    .modal-centered.show { display:flex; }
+    .modal-centered .panel { max-width:980px; width:100%; height:auto; min-height:200px; }
+
+    .thumb { width:72px; height:54px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid transparent; }
+    .thumb.active { border-color:#7f5bff; transform:scale(1.02); }
+
+    @media (max-width:900px) { .projects-grid{grid-template-columns:1fr;} .panel{padding:20px;} .thumb{width:56px;height:44px;} }
+  </style>
+</head>
+<body>
+  <canvas id="codeRain" aria-hidden="true"></canvas>
+
+  <nav class="fixed w-full top-0 left-0 right-0 z-50 backdrop-blur bg-white/3 border-b border-white/4">
+    <div class="nav-inner max-w-6xl mx-auto px-4">
+      <div class="flex items-center gap-4">
+        <div class="text-lg font-bold text-white">Purushottam</div>
+        <span class="hidden md:inline-block text-sm text-slate-300">Java • Backend • Full-Stack</span>
+      </div>
+
+      <ul class="hidden md:flex items-center gap-6 text-sm text-slate-200">
+        <li><a class="nav-link hover:text-white" href="#hero">Home</a></li>
+        <li><a class="nav-link hover:text-white" href="#about">About</a></li>
+        <li><a class="nav-link hover:text-white" href="#skills">Skills</a></li>
+        <li><a class="nav-link hover:text-white" href="#projects">Projects</a></li>
+        <li><a class="nav-link hover:text-white" href="#contact">Contact</a></li>
+      </ul>
+
+      <div class="flex items-center gap-3">
+        <a class="hidden sm:inline-block px-3 py-1 rounded text-sm text-white" href="https://github.com/PurushottamJanjire" target="_blank" rel="noreferrer"><i class="fa-brands fa-github"></i></a>
+        <a class="hidden sm:inline-block px-3 py-1 rounded text-sm text-white" href="https://www.linkedin.com/in/purushottam-janjire" target="_blank" rel="noreferrer"><i class="fa-brands fa-linkedin"></i></a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="progress" aria-hidden="true">
+    <div class="dot" data-for="hero" aria-hidden="true"></div>
+    <div class="dot" data-for="about" aria-hidden="true"></div>
+    <div class="dot" data-for="skills" aria-hidden="true"></div>
+    <div class="dot" data-for="projects" aria-hidden="true"></div>
+    <div class="dot" data-for="contact" aria-hidden="true"></div>
+  </div>
+
+  <main class="slides" id="slides" tabindex="0" aria-label="Portfolio slides">
+    <section id="hero" class="slide">
+      <div class="panel flex items-center">
+        <div class="hero-left w-full">
+          <div style="flex:0 0 520px; max-width:52%;">
+            <span class="hero-badge">Hello — I'm</span>
+            <h1 class="mt-6 text-4xl md:text-5xl font-extrabold leading-tight text-white">Purushottam Janjire</h1>
+            <div class="mt-4 text-lg md:text-xl text-slate-300">
+              <span id="typed" class="font-semibold">Full Stack Developer (Java + React)</span><span class="cursor" aria-hidden="true"></span>
+            </div>
+            <p class="mt-6 text-slate-300 max-w-lg"><b>Full Stack Java Developer</b> passionate about engineering real-world solutions. With strong skills in <b>Java, Spring Boot, React, and SQL</b>, I focus on writing clean code and creating smooth web application experiences</p>
+
+            <div class="mt-8 flex gap-3">
+              <a href="#projects" class="px-5 py-3 rounded-full text-sm font-semibold" style="background:linear-gradient(90deg,var(--accent-from),var(--accent-to)); color:white;">View Projects</a>
+              <a href="mailto:purushottamjanjire27@gmail.com" class="px-4 py-3 rounded-lg text-sm border border-white/6 text-slate-100">Contact</a>
+            </div>
+
+            <div class="mt-6 flex gap-3">
+              <a href="https://github.com/PurushottamJanjire" target="_blank" rel="noreferrer" class="text-slate-200 hover:text-white"><i class="fa-brands fa-github fa-lg"></i></a>
+              <a href="https://www.linkedin.com/in/purushottam-janjire" target="_blank" rel="noreferrer" class="text-slate-200 hover:text-white"><i class="fa-brands fa-linkedin fa-lg"></i></a>
+            </div>
+          </div>
+
+          <div style="flex:1; display:flex; justify-content:flex-end;">
+            <div class="hidden md:flex flex-col gap-4 text-right">
+              <div class="p-4 rounded-lg bg-white/3 border border-white/4 w-48">
+                <div class="text-2xl font-bold">3+</div>
+                <div class="text-xs text-slate-300">Years Coding</div>
+              </div>
+              <div class="p-4 rounded-lg bg-white/3 border border-white/4 w-48">
+                <div class="text-2xl font-bold">6</div>
+                <div class="text-xs text-slate-300">Major Projects</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="slide">
+      <div class="panel">
+        <div class="relative z-10">
+          <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">About Me</h2>
+          <p class="text-slate-300 max-w-3xl">Full Stack Java Developer specializing in Spring Boot and PostgreSQL. I enjoy designing APIs, implementing business logic, and delivering smooth user experiences with React and Tailwind. I focus on writing clean, maintainable code and deploying reliable web applications.</p>
+
+          <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-4 bg-white/3 rounded-lg border border-white/4">
+              <div class="font-semibold text-white">Education</div>
+              <div class="text-slate-300 text-sm">BSc Computer Science — Savitribai Phule Pune University<br>CGPA-9.16</div>
+            </div>
+            <div class="p-4 bg-white/3 rounded-lg border border-white/4">
+              <div class="font-semibold text-white">Currently</div>
+              <div class="text-slate-300 text-sm">Java Developer ready to build scalable backend systems, actively enhancing my expertise in Spring Boot, APIs, and database-driven applications.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="slide">
+      <div class="panel">
+        <div class="relative z-10">
+          <h2 class="text-2xl md:text-3xl font-bold text-white mb-6">Skills & Tools</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Java</div>
+              <div class="text-slate-300 text-sm">Spring Boot, JDBC,REST APIs, Microservices</div>
+            </div>
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Databases</div>
+              <div class="text-slate-300 text-sm">MySQL,PostgreSQL, MongoDB</div>
+            </div>
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Web</div>
+              <div class="text-slate-300 text-sm">JSP, Servlets, HTML/CSS</div>
+            </div>
+            
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Frontend</div>
+              <div class="text-slate-300 text-sm"> Bootstrap, React,Tailwind</div>
+            </div>
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Scripting</div>
+              <div class="text-slate-300 text-sm">Python, PHP</div>
+            </div>
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">CI/CD</div>
+              <div class="text-slate-300 text-sm">GitHub Actions</div>
+            </div>
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Testing</div>
+              <div class="text-slate-300 text-sm">JUnit Tests</div>
+            </div>
+            <div class="p-6 rounded-xl bg-white/3 border border-white/4 text-center">
+              <div class="text-xl font-semibold text-white mb-2">Tools</div>
+              <div class="text-slate-300 text-sm">Git, Postman,Maven</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="slide">
+      <div class="panel">
+        <div class="relative z-10 w-full">
+          <h2 class="text-2xl md:text-3xl font-bold text-white mb-6">Selected Projects</h2>
+          <div class="projects-grid">
+
+  <div class="project" role="button" tabindex="0"
+       onclick="openProjectModal(
+       'Pharma Sphere',
+       'Medical store management system with inventory, billing & alert.',
+       ['Pharma1.png','Pharma2..png','Pharma3.png','Pharma4.png','Pharma5.png','Pharma6.png']
+       )">
+    <div class="text-xl font-semibold text-white mb-2">Pharma Sphere</div>
+    <div class="text-slate-300 text-sm">JSP, PostgreSQL, Billing & stock control.</div>
+  </div>
+
+  <div class="project" role="button" tabindex="0"
+       onclick="openProjectModal(
+       'CrewBoard',
+       'Employee management: attendance, payroll & leaves.',
+       ['CrewBoard1.png','CrewBoard2.png','CrewBoard3.png','CrewBoard4.png','CrewBoard5.png','CrewBoard6.png']
+       )">
+    <div class="text-xl font-semibold text-white mb-2">CrewBoard</div>
+    <div class="text-slate-300 text-sm">React frontend + Spring Boot backend.</div>
+  </div>
+
+  
+  <div class="project" role="button" tabindex="0"
+       onclick="openProjectModal(
+       'Bank Management System',
+       'Secure bank system with JWT authentication & role based access.',
+       ['Bank1.png','Bank2.png','Bank3.png']
+       )">
+    <div class="text-xl font-semibold text-white mb-2">Bank Management System</div>
+    <div class="text-slate-300 text-sm">Spring Boot, JWT, PostgreSQL.</div>
+  </div>
+
+  <div class="project" role="button" tabindex="0"
+       onclick="openProjectModal(
+       'ProfitGate',
+       'B2B collaboration marketplace prototype.',
+       ['PG1.png']
+       )">
+    <div class="text-xl font-semibold text-white mb-2">ProfitGate</div>
+    <div class="text-slate-300 text-sm">Full-stack prototype with REST APIs.</div>
+  </div>
+
+  
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="slide">
+      <div class="panel">
+        <div class="relative z-10 text-center">
+          <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Let’s build something</h2>
+          <p class="text-slate-300 max-w-2xl mx-auto mb-6">I’m open to internships and junior backend/Java roles. If you'd like to collaborate, send a short message — I reply quickly.</p>
+          <div class="flex items-center justify-center gap-4">
+            <a href="mailto:purushottamjanjire27@gmail.com" class="px-6 py-3 rounded-full text-white" style="background:linear-gradient(90deg,var(--accent-from),var(--accent-to));">Email Me</a>
+            <a href="https://github.com/PurushottamJanjire" target="_blank" rel="noreferrer" class="px-5 py-3 rounded-lg text-sm border border-white/6 text-slate-100">GitHub</a>
+          </div>
+          <p class="mt-8 text-slate-400">© 2025 Purushottam Janjire</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="infoModal" class="modal-centered" aria-hidden="true" role="dialog">
+    <div class="panel">
+      <button aria-label="Close modal" class="absolute right-6 top-6 text-white text-2xl" onclick="closeInfoModal()">×</button>
+      <div id="infoModalBody" class="mt-2 text-slate-200"></div>
+    </div>
+  </div>
+
+  <div id="projectModal" class="modal-centered" aria-hidden="true" role="dialog">
+    <div class="panel bg-gray-900 rounded-lg p-4 relative">
+      <button onclick="closeProjectModal()" aria-label="Close project modal" class="absolute -top-0 -right-0 bg-red-500 text-white rounded-full w-8 h-8 flex justify-center items-center hover:bg-red-600">✕</button>
+
+      <h2 id="projectModalTitle" class="text-lg font-bold text-white mb-3 text-center"></h2>
+
+      <div class="relative">
+        <img id="projectModalImage" class="rounded-lg w-full object-contain max-h-[60vh]" alt="Screenshot">
+        <button id="prevBtn" onclick="prevProjectImage()" class="absolute left-2 top-1/2 -translate-y-1/2 px-3 py-2 bg-white/20 rounded-full text-white text-lg" aria-label="Previous image">&#10094;</button>
+        <button id="nextBtn" onclick="nextProjectImage()" class="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-2 bg-white/20 rounded-full text-white text-lg" aria-label="Next image">&#10095;</button>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between gap-4">
+        <div id="thumbs" class="flex gap-2 "></div>
+        <div id="imgCounter" class="text-slate-300 text-sm">0 / 0</div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+
+(function() {
+  const canvas = document.getElementById('codeRain');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  let fontSize = 18;
+  let columns = 0;
+  let drops = [];
+  const symbols = "01{}[%^&*@#$]()<3456>=+-*/;:.#@%$ABCDWERTYUIOPCVBNM<>XCVBNM";
+  let raf;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    fontSize = Math.max(12, Math.floor(window.innerWidth / 120));
+    columns = Math.floor(canvas.width / fontSize);
+    drops = new Array(columns).fill(0).map(()=>Math.floor(Math.random()*canvas.height/fontSize));
+  }
+
+  function draw() {
+    ctx.fillStyle = "rgba(2,6,23,0.06)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.font = fontSize + "px Poppins, monospace";
+    for (let i = 0; i < drops.length; i++) {
+      const x = i * fontSize;
+      const y = drops[i] * fontSize;
+      const text = symbols.charAt(Math.floor(Math.random()*symbols.length));
+      const grad = ctx.createLinearGradient(0,0,0,fontSize);
+      grad.addColorStop(0, "rgba(96,165,250,0.95)");
+      grad.addColorStop(1, "rgba(124,58,237,0.85)");
+      ctx.fillStyle = grad;
+      ctx.fillText(text, x, y);
+      if (y > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]+=0.45;
+    }
+    raf = requestAnimationFrame(draw);
+  }
+
+  function start() { if (!raf) draw(); }
+  function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+  window.addEventListener('resize', resize);
+  resize();
+  start();
+  window.__codeRain = { start, stop };
+})();
+
+
+(function(){
+  const roles = ["Full Stack Developer (Java + React)","Java Developer","Tech Enthusiast","Software Engineer"];
+  const el = document.getElementById('typed');
+  let ri = 0, ci = 0, deleting = false;
+  function tick(){
+    const full = roles[ri];
+    if (!deleting) {
+      ci++; el.textContent = full.slice(0,ci);
+      if (ci === full.length) { deleting = true; setTimeout(tick, 900); return; }
+      setTimeout(tick, 120);
+    } else {
+      ci--; el.textContent = full.slice(0,ci);
+      if (ci === 0) { deleting = false; ri = (ri+1)%roles.length; setTimeout(tick, 300); return; }
+      setTimeout(tick, 60);
+    }
+  }
+  tick();
+})();
+
+
+(function(){
+  const slides = Array.from(document.querySelectorAll('section.slide'));
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const slidesContainer = document.getElementById('slides');
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (en.intersectionRatio >= 0.55) {
+        const id = en.target.id;
+        dots.forEach(d => d.classList.toggle('active', d.dataset.for===id));
+        if (id === 'hero') window.__codeRain.start(); else window.__codeRain.stop();
+      }
+    });
+  }, { threshold: Array.from({length:101}, (_,i)=>i/100) });
+
+  slides.forEach(s => obs.observe(s));
+
+  document.querySelectorAll('.nav-link').forEach(a=>{
+    a.addEventListener('click', (e)=>{
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+
+  const sectionList = slides;
+  dots.forEach((d, i) => {
+    d.addEventListener('click', () => sectionList[i].scrollIntoView({behavior:'smooth'}));
+  });
+
+  dots.forEach(d => d.classList.toggle('active', d.dataset.for==='hero'));
+})();
+
+
+(function(){
+  const infoModal = document.getElementById('infoModal');
+  const infoBody = document.getElementById('infoModalBody');
+
+  window.openInfoModal = function(title, desc) {
+    infoBody.innerHTML = `<h3 class="text-2xl font-bold mb-3">${title}</h3>
+      <p class="text-slate-300 mb-4">${desc}</p>
+      <div class="w-full h-44 bg-white/5 rounded-md flex items-center justify-center text-slate-400">Screenshot placeholder</div>`;
+    infoModal.classList.add('show'); infoModal.setAttribute('aria-hidden','false');
+  };
+  window.closeInfoModal = function() { infoModal.classList.remove('show'); infoModal.setAttribute('aria-hidden','true'); };
+
+  infoModal.addEventListener('click', (e)=>{ if (e.target === infoModal) closeInfoModal(); });
+  document.addEventListener('keydown', (e) => { if (e.key==='Escape') closeInfoModal(); });
+})();
+
+
+(function(){
+  const modal = document.getElementById('projectModal');
+  const modalTitle = document.getElementById('projectModalTitle');
+  const modalImg = document.getElementById('projectModalImage');
+  const thumbsContainer = document.getElementById('thumbs');
+  const imgCounter = document.getElementById('imgCounter');
+
+  let images = [];
+  let idx = 0;
+
+  function clampIndex(i) {
+    if (!images || images.length === 0) return 0;
+    return ((i % images.length) + images.length) % images.length;
+  }
+
+  window.openProjectModal = function(title, desc, imgs) {
+    images = Array.isArray(imgs) ? imgs.slice() : [];
+    idx = 0;
+    modalTitle.textContent = title;
+    buildThumbs();
+    update();
+    modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
+    modal.setAttribute('aria-label', title + " project gallery");
+  };
+
+  window.closeProjectModal = function() {
+    modal.classList.remove('show'); modal.setAttribute('aria-hidden','true');
+  };
+
+  window.nextProjectImage = function() {
+    idx = clampIndex(idx + 1);
+    update();
+  };
+
+  window.prevProjectImage = function() {
+    idx = clampIndex(idx - 1);
+    update();
+  };
+
+  function update() {
+    if (!images || images.length === 0) {
+      modalImg.src = 'https://via.placeholder.com/1200x700?text=No+Image';
+      imgCounter.textContent = '0 / 0';
+      thumbsContainer.innerHTML = '';
+      return;
+    }
+    modalImg.src = images[clampIndex(idx)];
+    imgCounter.textContent = `${clampIndex(idx)+1} / ${images.length}`;
+    const thumbs = Array.from(thumbsContainer.querySelectorAll('img'));
+    thumbs.forEach((t,i)=> t.classList.toggle('active', i === clampIndex(idx)));
+  }
+
+  function buildThumbs() {
+    thumbsContainer.innerHTML = '';
+    if (!images || images.length === 0) return;
+    images.forEach((src, i) => {
+      const t = document.createElement('img');
+      t.src = src;
+      t.alt = "thumbnail " + (i+1);
+      t.className = 'thumb';
+      t.onclick = () => { idx = i; update(); };
+      thumbsContainer.appendChild(t);
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('show')) return;
+    if (e.key === 'ArrowRight') nextProjectImage();
+    if (e.key === 'ArrowLeft') prevProjectImage();
+    if (e.key === 'Escape') closeProjectModal();
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeProjectModal();
+  });
+})();
+
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Tab') document.documentElement.style.setProperty('--show-focus', '1');
+});
+</script>
+</body>
+</html>
